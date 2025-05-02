@@ -29,11 +29,13 @@ export const CartSlice = createSlice({
 
 
     removeItem: (state, action) => {
-        const { name, quantity } = action.payload;
-        state.items = state.items.filter(item => item.name !== name);
-        state.numOfItems -= quantity;
-
-        // Just to be sure... I hate negative numbers
+        const name = action.payload;
+        const existingItem = state.items.find(item => item.name === name);
+        
+        if (existingItem) {
+            state.numOfItems -= existingItem.quantity;
+            state.items = state.items.filter(item => item.name !== name);
+        }
         if (state.numOfItems < 0) {
             state.numOfItems = 0;
         }
@@ -47,7 +49,7 @@ export const CartSlice = createSlice({
         const {name, quantity} = action.payload;
         const itemToUpdate  = state.items.find(item => item.name === name);
         if (itemToUpdate) {
-            
+
             const differenceQuantity = quantity - itemToUpdate.quantity;
             state.numOfItems += differenceQuantity;
             itemToUpdate.quantity = quantity;
